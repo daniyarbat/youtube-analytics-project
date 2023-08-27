@@ -6,7 +6,7 @@ from googleapiclient.discovery import build
 
 import isodate
 
-
+# AIzaSyCDryHaKkl9g-4ngkfI7nt9vr2O5NcvluI
 # YT_API_KEY скопирован из гугла и вставлен в переменные окружения
 api_key: str = os.getenv('YT_API_KEY')
 
