@@ -7,34 +7,48 @@ class Channel:
     """
     Класс для ютуб-канала
     """
-
     def __init__(self, channel_id: str) -> None:
-
         """
         Экземпляр инициализируется id канала.
         Дальше все данные будут подтягиваться по API.
         """
         self.channel_id = channel_id
-        self.api_key = os.getenv('YT_API_KEY')
-        self.channel = None
+        self.info = self.get_service().channels().list(id=self.channel_id, part='snippet,statistics').execute()
+        self.title = self.info['items'][0]['snippet']['title']
+        self.description = self.info['items'][0]['snippet']['description']
+        self.customUrl = self.info['items'][0]['snippet']['customUrl']
+        self.subscriberCount = self.info['items'][0]['statistics']['subscriberCount']
+        self.videoCount = self.info['items'][0]['statistics']['videoCount']
+        self.viewCount = self.info['items'][0]['statistics']['viewCount']
+
+    @classmethod
+    def get_service(cls):
+        '''
+        Класс-метод возвращающий объект
+        для работы с YouTube API
+        '''
+        api_key: str = os.getenv('YT_API_KEY')
+        return build('youtube', 'v3', developerKey=api_key)
+
+    def to_json(self, yt_channel):
+        '''
+        Метод, сохраняющий в файл значения
+        атрибутов экземпляра `Channel`
+        '''
+        channel_info = {
+            'title': self.title,
+            'description': self.description,
+            'customUrl': self.customUrl,
+            'subscriberCount': self.subscriberCount,
+            'videoCount': self.videoCount,
+            'viewCount': self.viewCount
+        }
+        with open(yt_channel, 'w', encoding='utf-8') as json_file:
+            json.dump(channel_info, json_file, indent=2, ensure_ascii=False)
+
 
     def print_info(self) -> None:
-
         """
         Выводит в консоль информацию о канале.
         """
-        if not self.api_key:
-            print("Ошибка: API ключ не установлен. "
-                  "Убедитесь, что вы добавили ключ в переменные окружения.")
-            return
-
-        youtube = build('youtube', 'v3', developerKey=self.api_key)
-        self.channel = youtube.channels().list(id=self.channel_id, part='snippet,statistics').execute()
-        self.printj(self.channel)
-
-    def printj(self, dict_to_print: dict) -> None:
-
-        """
-        Выводит словарь в json-подобном удобном формате с отступами
-        """
-        print(json.dumps(dict_to_print, indent=2, ensure_ascii=False))
+        print(json.dumps(self.info, indent=2, ensure_ascii=False))
