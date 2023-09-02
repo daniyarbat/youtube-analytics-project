@@ -21,6 +21,9 @@ class Channel:
         self.videoCount = self.info['items'][0]['statistics']['videoCount']
         self.viewCount = self.info['items'][0]['statistics']['viewCount']
 
+    def __str__(self):
+        return f'{self.title} {(self.customUrl)}'
+
     @classmethod
     def get_service(cls):
         '''
@@ -52,3 +55,45 @@ class Channel:
         Выводит в консоль информацию о канале.
         """
         print(json.dumps(self.info, indent=2, ensure_ascii=False))
+
+    def __add__(self, other):
+        '''
+        Добавяем магический метод на проверку
+        cложения экземпляров
+        '''
+        return self.subscriberCount + other.subscriberCount
+
+    def __sub__(self, other):
+        '''
+        Добавяем магический метод на проверку
+        разности экземпляров
+        '''
+        return int(self.subscriberCount) - int(other.subscriberCount)
+
+    def __lt__(self, other):
+        '''
+        Добавяем магический метод на проверку
+        «меньше чем» для экземпляров
+        '''
+        return self.subscriberCount < other.subscriberCount
+
+    def __le__(self, other):
+        '''
+        Добавляем магический метод на проверку
+        на «меньше равно» для экземпляров
+        '''
+        return self.subscriberCount <= other.subscriberCount
+
+    def __gt__(self, other):
+        '''
+        Добавляем магический метод на проверку
+        на «больше чем» для экземпляров
+        '''
+        return self.subscriberCount > other.subscriberCount
+
+    def __ge__(self, other):
+        '''
+        Добавляем магический метод на проверку
+        на «больше равно» для экземпляров
+        '''
+        return self.subscriberCount >= other.subscriberCount
